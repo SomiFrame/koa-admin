@@ -1,0 +1,19 @@
+{
+  "name": "koa-admin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.5.2"
+  },
+  "devDependencies": {
+    "koa-logger": "^3.2.0",
+    "mongodb": "^3.1.4"
+  }
+}
