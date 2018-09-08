@@ -3,7 +3,16 @@ const router = new Router()
 
 router
     .post('/login',async(ctx,next)=>{
-        ctx.body="login"
+        console.log('ctx',ctx.request.body)
+        ctx.verifyParams({
+            email: 'email',
+            password: 'password'
+        })
+        const {body} = ctx.request
+        ctx.body={
+            ...body
+        }
+
     })
 
 module.exports = router
