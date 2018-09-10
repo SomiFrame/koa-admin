@@ -25,7 +25,7 @@ router
             const {password: originPassword} = row[0]
             const comparePassword = await bcrypt.compare(password,originPassword)
             if(comparePassword) {
-                const token = Jwt.sign({email,password},secret)
+                const token = Jwt.sign({email},secret)
                 ctx.body={
                     status: 0,
                     message: "login successful",

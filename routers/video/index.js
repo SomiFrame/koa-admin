@@ -13,6 +13,8 @@ const secret = "2AACE74965CF6D73C9218410D3EE939C2993C7F8D9F99CFCB2AB430D6E8358B0
 router
     .post('/video',async(ctx,next)=>{
         console.log('ctx',ctx.request.body)
+        ctx.body = {
+        }
     })
 
 module.exports = router

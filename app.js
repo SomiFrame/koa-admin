@@ -19,8 +19,6 @@ app.use(bodyParser())
 app.use(parameter(app))
 app.use(KoaJwt({secret}).unless({path:[/^\/login/,/^\/register/]}))
 
-console.log('token',Jwt.sign({
-},secret))
 
 app.use(router())
 
