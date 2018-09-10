@@ -17,10 +17,10 @@ app.use(Logger((str,args)=>{
 }))
 app.use(bodyParser())
 app.use(parameter(app))
+app.use(KoaJwt({secret}).unless({path:[/^\/login/,/^\/register/]}))
 
 console.log('token',Jwt.sign({
 },secret))
-//app.use(KoaJwt({secret}))
 
 app.use(router())
 
