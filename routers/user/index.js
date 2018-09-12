@@ -54,7 +54,7 @@ router
             email: 'email',
             password: 'password',
         })
-        const {emial} = ctx.request.body
+        const {email} = ctx.request.body
         const row = await UserModel.find({email}).exec()
         if(row[0]){
             ctx.body = {

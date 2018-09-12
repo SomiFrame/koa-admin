@@ -11,6 +11,9 @@ const S_User = new Schema({
     password: String,
     name: String
 })
+const S_Tag = new Schema({
+    name: String
+})
 const M_User = connection.model('user',S_User)
 
 module.exports = {
