@@ -12,6 +12,7 @@ const getSessionToken = () =>{
         })
     })
 }
+
 router
     .get('/certification',async(ctx,next)=>{
         let res;

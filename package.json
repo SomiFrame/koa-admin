@@ -10,8 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^6.0.0",
     "koa": "^2.5.2",
-    "koa-combine-routers": "^4.0.1"
+    "koa-combine-routers": "^4.0.1",
+    "koa-validate": "^1.0.7"
   },
   "devDependencies": {
     "aws-sdk": "^2.314.0",

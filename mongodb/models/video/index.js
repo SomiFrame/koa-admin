@@ -4,8 +4,14 @@ const mongoose = require('mongoose'),
 
 const S_Video = new Schema({
     title: String,
-    createTime: Date,
+    createdOn:{
+        type: Date,
+        default: new Date()
+    },
     description: String,
-    tags: [{ type: Types.ObjectId, ref: 'Tag' }]
+    tags: [{ type: Types.ObjectId, ref: 'tag' }],
+    image: {
+        type: Types.Mixed
+    }
 })
-module.exports = S_Vdieo
+module.exports = S_Video

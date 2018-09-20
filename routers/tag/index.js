@@ -1,11 +1,13 @@
 const Router = require('koa-router')
 const Models = require('../../mongodb/models')
 const _ = require('lodash')
-const router = new Router()
+const router = new Router({
+    prefix: '/tags'
+})
 const TagModel = Models.M_Tag
 
 router
-    .get('/tags',async (ctx,next)=>{
+    .get('/',async (ctx,next)=>{
         if(_.isEmpty(ctx.request.query)){
             const rows = await TagModel.find().exec()
             const total = await TagModel.count().exec()
@@ -51,7 +53,7 @@ router
             }
         }
     })
-    .post('/tags',async (ctx,next)=>{
+    .post('/',async (ctx,next)=>{
         const {name} = ctx.request.body
         let instance = new TagModel()
         instance.name = name

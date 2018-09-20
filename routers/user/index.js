@@ -3,21 +3,29 @@ const Router = require('koa-router')
 const Jwt = require('jsonwebtoken')
 const router = new Router()
 const Models= require('../../mongodb/models')
-
 const UserModel= Models.M_User
 const instance = new UserModel()
 
 const saltRounds = 10
 
-const secret = "2AACE74965CF6D73C9218410D3EE939C2993C7F8D9F99CFCB2AB430D6E8358B0"
+const secret = process.env.JWT_SECRET
 
 router
     .post('/login',async(ctx,next)=>{
-        console.log('ctx',ctx.request.body)
-        ctx.verifyParams({
-            email: 'email',
-            password: 'password'
-        })
+        ctx.checkBody('email')
+            .isEmail("please enter email")
+        ctx.checkBody('password')
+            .notEmpty("password is required")
+            .isAlphanumeric("password only contain number and letter")
+            .len(6,15,"password length is min to 6 and max to 15")
+        if(ctx.errors) {
+            ctx.body = {
+                status: 1,
+                message: `validate failed`,
+                error: ctx.errors
+            }
+            return
+        }
         const {body:{email,password}} = ctx.request
         const row = await UserModel.find({email}).exec()
         const flag = true
