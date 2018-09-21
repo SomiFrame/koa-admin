@@ -20,8 +20,6 @@ app.use(bodyParser())
 app.use(parameter(app))
 app.use(KoaJwt({secret}).unless({path:[/^\/login/,/^\/register/]}))
 
-
 app.use(router())
-
 
 app.listen(3000)

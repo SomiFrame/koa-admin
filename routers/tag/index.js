@@ -54,7 +54,18 @@ router
         }
     })
     .post('/',async (ctx,next)=>{
-        const {name} = ctx.request.body
+        let name = ctx.checkBody('name')
+            .notMatch(/[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/,"can't enter illegal symbol")
+            .value
+        if(ctx.errors) {
+            ctx.status = 400
+            ctx.body ={
+                status: 1,
+                message: "validated failed",
+                error: ctx.errors
+            }
+            return
+        }
         let instance = new TagModel()
         instance.name = name
         try {
@@ -73,6 +84,24 @@ router
                 data: null
             }
         }
+    })
+    .delete('/:id',async(ctx,next)=>{
+        let id = ctx.checkParams('id').escape().value
+        try {
+            let res = await TagModel.remove({_id: id})
+            ctx.body = {
+                status: 0,
+                data: res,
+                message: "success"
+            }
+        }catch(error) {
+            ctx.body = {
+                status: 1,
+                error,
+                message: "failed"
+            }
+        }
+
     })
 
 module.exports = router

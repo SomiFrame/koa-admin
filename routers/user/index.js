@@ -33,7 +33,7 @@ router
             const {password: originPassword} = row[0]
             const comparePassword = await bcrypt.compare(password,originPassword)
             if(comparePassword) {
-                const token = Jwt.sign({email},secret)
+                const token = Jwt.sign({email},secret,{expiresIn:60*60*12})
                 ctx.body={
                     status: 0,
                     message: "login successful",
@@ -57,11 +57,22 @@ router
         }
     })
     .post('/register',async(ctx,next)=>{
-        console.log('current router /register')
-        ctx.verifyParams({
-            email: 'email',
-            password: 'password',
-        })
+        ctx.checkBody('email')
+            .isEmail("please enter email")
+        ctx.checkBody('password')
+            .notEmpty("password is required")
+            .isAlphanumeric("password only contain number and letter")
+            .len(6,15,"password length is min to 6 and max to 15")
+        ctx.checkBody('confirmPassword')
+            .eq(ctx.request.body.password,"the two passwords you enter isn't equal")
+        if(ctx.errors){
+            ctx.body = {
+                status: 1,
+                message: "validated failed",
+                error: ctx.errors
+            }
+            return
+        }
         const {email} = ctx.request.body
         const row = await UserModel.find({email}).exec()
         if(row[0]){

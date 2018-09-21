@@ -10,9 +10,37 @@ const VideoModel= Models.M_Video
 
 router
     .post('/',async(ctx,next)=>{
-        console.log('ctx',ctx.request.body)
-        const {title,description,tags,image,video} = ctx.request
-
+        let {title,description,tags,image,video} = ctx.request.body
+        title = ctx.checkBody('title')
+            .trim()
+            .notEmpty('title is required')
+            .notMatch(/[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/,"can't enter illegal symbol")
+            .value
+        description = ctx.checkBody('description')
+            .trim()
+            .notEmpty('description is required')
+            .notMatch(/[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/,"can't enter illegal symbol")
+            .value
+        tags = ctx.checkBody('tags')
+            .ensure(Array.isArray(tags)&&tags.length>0,"tags is required")
+            .value
+        image = ctx.checkBody('image')
+            .isNull("image can not be null")
+            .isJSON("image need JSON format")
+            .value
+        video = ctx.checkBody('video')
+            .isNull("video can not be null")
+            .isJSON("video need JSON format")
+            .value
+        if(ctx.errors) {
+            ctx.status = 400
+            ctx.body = {
+                status: 1,
+                message: 'validated failed',
+                error: ctx.errors
+            }
+            return
+        }
         const instance = new VideoModel()
         instance.title = title
         instance.description = description
@@ -64,7 +92,7 @@ router
         let row
         try {
             row = await VideoModel.findOne({_id:id}).exec()
-            ctx.body ={
+            ctx.body = {
                 status: 0,
                 message: "message",
                 data: row
