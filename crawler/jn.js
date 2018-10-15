@@ -21,7 +21,6 @@ const start = async ()=>{
                             .get(page_index[0].page_play_path)
                             .set('Accept','text/html')
     console.log(result_play.text)
-
 }
 
 start()
