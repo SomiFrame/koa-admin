@@ -5,7 +5,6 @@ const parameter = require('koa-parameter')
 const Logger = require('koa-logger')
 const router = require('./routers')
 
-const secret = process.env.JWT_SECRET
 const port = process.env.PORTAL_PORT
 const app = new Koa();
 require('koa-validate')(app)
