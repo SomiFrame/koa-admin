@@ -1,4 +1,3 @@
-const bcrypt = require('bcrypt')
 const Router = require('koa-router')
 const router = new Router({
     prefix: "/videos"
@@ -11,27 +10,6 @@ const VideoModel= Models.M_Video
 router
     .post('/',async(ctx,next)=>{
         let {title,description,tags,image,video} = ctx.request.body
-        title = ctx.checkBody('title')
-            .trim()
-            .notEmpty('title is required')
-            .notMatch(/[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/,"can't enter illegal symbol")
-            .value
-        description = ctx.checkBody('description')
-            .trim()
-            .notEmpty('description is required')
-            .notMatch(/[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/,"can't enter illegal symbol")
-            .value
-        tags = ctx.checkBody('tags')
-            .ensure(Array.isArray(tags)&&tags.length>0,"tags is required")
-            .value
-        image = ctx.checkBody('image')
-            .isNull("image can not be null")
-            .isJSON("image need JSON format")
-            .value
-        video = ctx.checkBody('video')
-            .isNull("video can not be null")
-            .isJSON("video need JSON format")
-            .value
         if(ctx.errors) {
             ctx.status = 400
             ctx.body = {
@@ -41,14 +19,10 @@ router
             }
             return
         }
-        const instance = new VideoModel()
-        instance.title = title
-        instance.description = description
-        instance.tags = tags
-        instance.image = image
-        instance.video = video
+        const instance = new VideoModel({
+            title,description,tags,image,video
+        })
         const res = await instance.save()
-        console.log(res)
         ctx.body = {
             status: 0,
             message: 'success',
@@ -107,15 +81,43 @@ router
         }
     })
     .delete('/:id',async(ctx,next)=>{
-        console.log(ctx.params)
         const {id} = ctx.params
         let res
         try {
-            res = await VideoModel.remove({ _id: id})
+            res = await VideoModel.remove({ _id: id}).exec()
             ctx.body ={
                 status: 0,
                 message: 'success',
                 data: res
+            }
+        }catch(err){
+            ctx.body = {
+                status: 1,
+                message: 'failed',
+                error: err
+            }
+        }
+    })
+    .put('/:id',async(ctx,next)=>{
+        const {id} = ctx.params
+        const {tags,title,image,video,ref_img_path,ref_video_path,description}= ctx.request.body
+        try {
+            let row = await VideoModel.findById(id)
+            row.set({
+                tags: tags||row.tags,
+                title: title||row.title,
+                video: video||row.video,
+                image: image||row.image,
+                ref_img_path : ref_img_path || row.ref_img_path,
+                ref_video_path: ref_video_path || row.ref_video_path,
+                description : description|| row.description
+            })
+            console.log('row:',row)
+            await row.save()
+            ctx.body = {
+                status: 0,
+                message: 'success',
+                data: row
             }
         }catch(err){
             ctx.body = {

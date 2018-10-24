@@ -7,6 +7,24 @@ const router = new Router({
 const TagModel = Models.M_Tag
 
 router
+    .get('/:id',async(ctx,next)=>{
+        const {id} = ctx.params
+        try {
+            const row = await TagModel.findById(id)
+            ctx.body = {
+                status: 0,
+                message: 'success',
+                data: row
+            }
+        }catch (err){
+            ctx.body = {
+                status: 1,
+                message: 'failed',
+                error: err
+            }
+        }
+
+    })
     .get('/',async (ctx,next)=>{
         if(_.isEmpty(ctx.request.query)){
             const rows = await TagModel.find().exec()
@@ -101,7 +119,28 @@ router
                 message: "failed"
             }
         }
-
+    })
+    .put('/:id',async(ctx,next)=>{
+        const id = ctx.checkParams('id').escape().value
+        const {name} = ctx.request.body
+        try{
+            let row = await TagModel.findById(id)
+            row.set({
+                name: name||row.name
+            })
+            await row.save()
+            ctx.body= {
+                status: 0,
+                message: 'success',
+                data: row
+            }
+        }catch(err) {
+            ctx.body={
+                status: 1,
+                message: 'failed',
+                error: err
+            }
+        }
     })
 
 module.exports = router
