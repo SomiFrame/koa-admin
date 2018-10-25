@@ -6,6 +6,7 @@ const Models = require('../../mongodb/models')
 const _ = require('lodash')
 
 const VideoModel= Models.M_Video
+const TagModel= Models.M_Tag
 
 router
     .post('/',async(ctx,next)=>{
@@ -42,15 +43,30 @@ router
                 }
             }
         }else {
-            const {limit,page} = ctx.request.query
-            const rows = await VideoModel
-                .find()
-                .skip(+limit*(page-1))
-                .limit(+limit)
-                .populate({path:'tags'})
-                .sort({createdOn:-1})
-                .exec()
-            const total = await VideoModel.count().exec()
+            const {limit,page,tag_name} = ctx.request.query
+            let row,total
+            if(tag_name) {
+                let tag = await TagModel
+                    .findOne({name: tag_name})
+                rows = await VideoModel
+                    .find({tags: tag._id})
+                    .populate({path:'tags'})
+                    .skip(+limit*(page-1))
+                    .limit(+limit)
+                    .sort({createdOn:-1})
+                    .exec()
+                total = await VideoModel.find({tags:tag._id}).count().exec()
+            }
+            else {
+                rows = await VideoModel
+                    .find()
+                    .populate({path:'tags'})
+                    .skip(+limit*(page-1))
+                    .limit(+limit)
+                    .sort({createdOn:-1})
+                    .exec()
+                total = await VideoModel.count().exec()
+            }
             ctx.body= {
                 status: 1,
                 message: 'success',
