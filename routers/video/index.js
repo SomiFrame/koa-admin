@@ -43,8 +43,8 @@ router
                 }
             }
         }else {
-            const {limit,page,tag_name} = ctx.request.query
-            let row,total
+            const {limit,page,tag_name,title} = ctx.request.query
+            let rows,total
             if(tag_name) {
                 let tag = await TagModel
                     .findOne({name: tag_name})
@@ -55,7 +55,17 @@ router
                     .limit(+limit)
                     .sort({createdOn:-1})
                     .exec()
-                total = await VideoModel.find({tags:tag._id}).count().exec()
+                total = await VideoModel.count({tags:tag._id}).exec()
+            }
+            else if(title){
+                rows = await VideoModel
+                    .find({title:new RegExp(title,'i')})
+                    .populate({path:'tags'})
+                    .skip(+limit*(page-1))
+                    .limit(+limit)
+                    .sort({createdOn:-1})
+                    .exec()
+                total = await VideoModel.count({title:new RegExp(title,'i')}).exec()
             }
             else {
                 rows = await VideoModel
